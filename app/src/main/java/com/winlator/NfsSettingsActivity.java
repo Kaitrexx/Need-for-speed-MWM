@@ -41,7 +41,8 @@ public class NfsSettingsActivity extends AppCompatActivity {
     public static final String PREF_GPU_DRIVER = "nfs_gpu_driver"; // NFS_GPU_V1
     private static final String[] GPU_VALUES = {"auto", "turnip", "vortek"};
     public static final String PREF_CPU_CORES = "nfs_cpu_cores"; // NFS_CPU_V1
-    private static final String[] CPU_VALUES = {"6,7", "4,5,6,7", "0,1,2,3,4,5,6,7"};
+    // NFS_UNIVERSAL: "auto" = cihazın ən sürətli 2 nüvəsini sysfs-dən tapır
+    private static final String[] CPU_VALUES = {"auto", "6,7", "4,5,6,7", "0,1,2,3,4,5,6,7"};
 
     // NFSMW-in öz ölçüləri (speed.exe-dən): yalnız 4:3 və 5:4.
     private static final String[] ASPECT_LABELS = {"4:3", "5:4"};
@@ -53,7 +54,8 @@ public class NfsSettingsActivity extends AppCompatActivity {
     public static final String PREF_BOX64 = "nfs_box64_preset";
     private static final String[] BOX64_VALUES = {"PERFORMANCE", "INTERMEDIATE", "STABILITY"};
     public static final String PREF_DXVK = "nfs_dxvk_version";
-    private static final String[] DXVK_VALUES = {"1.10.3", "2.4.1"};
+    // NFS_UNIVERSAL: "auto" = Vulkan API versiyasına görə 1.10.3 / 2.4.1 seçir
+    private static final String[] DXVK_VALUES = {"auto", "1.10.3", "2.4.1"};
 
     // NFS_SET_V1: tünd/sarı dizayn
     private static final int YELLOW = 0xFFFFC107;
