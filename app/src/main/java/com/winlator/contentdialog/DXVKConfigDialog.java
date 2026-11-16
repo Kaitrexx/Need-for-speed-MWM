@@ -113,7 +113,11 @@ public class DXVKConfigDialog extends ContentDialog {
             content += "d3d9.customDeviceDesc = \""+parts[2]+"\"\n";
         }
 
-        content += "d3d11.constantBufferRangeCheck = \"True\"\n\n";
+        content += "d3d11.constantBufferRangeCheck = \"True\"\n";
+
+        // NFS_OPT: Helio G85-in 2 böyük (A75) nüvesi var. Shader compiler thread-lərini
+        // 2 ilə məhdudlaşdırmaq ilk açılışda CPU-nun doymasını və stutter-ı azaldır.
+        content += "dxvk.numCompilerThreads = 2\n\n";
 
         content += "[GTA5.exe]\n";
         content += "dxgi.maxDeviceMemory = 512\n";
