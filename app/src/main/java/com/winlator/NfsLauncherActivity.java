@@ -50,6 +50,7 @@ import com.winlator.container.GraphicsDrivers;
 import com.winlator.core.AppUtils;
 import com.winlator.core.DefaultVersion;
 import com.winlator.core.LocaleHelper;
+import com.winlator.core.NetworkHelper;
 import com.winlator.xenvironment.RootFS;
 import com.winlator.xenvironment.RootFSInstaller;
 
@@ -623,7 +624,69 @@ public class NfsLauncherActivity extends AppCompatActivity {
         container.saveData();
     }
 
+    // NFS_LAN: NFS MW server-i "ilk şəbəkə interfeysinə" bind olur və
+    // TRUST_MATCH / ADDR server.cfg-dəki IP-yə qulaq asır. Default faylda EA-nın
+    // 159.153.253.82 IP-si yazılıb — buna görə LAN/ZeroTier heç vaxt qoşulmur.
+    // Oyun başlamadan seçilmiş rejimə görə öz IP-mizi yazırıq.
+    private void patchServerCfg(File gameDir) {
+        String mode = preferences.getString(NfsSettingsActivity.PREF_LAN_MODE, "off");
+        if (mode.equals("off") || gameDir == null || !gameDir.isDirectory()) return;
+
+        NetworkHelper helper = new NetworkHelper(this);
+        String ip = mode.equals("zerotier") ? helper.getOverlayIPv4Address() : helper.getWifiIPv4Address();
+        if (ip == null) {
+            Toast.makeText(this, mode.equals("zerotier")
+                    ? R.string.nfs_lan_err_zt : R.string.nfs_lan_err_wifi, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        File cfg = new File(gameDir, "server.cfg");
+        String content = "";
+        try {
+            if (cfg.exists()) {
+                java.io.FileInputStream fis = new java.io.FileInputStream(cfg);
+                byte[] buf = new byte[fis.available()];
+                int n = fis.read(buf);
+                fis.close();
+                content = new String(buf, 0, Math.max(0, n));
+            }
+        }
+        catch (Exception ignored) {}
+
+        StringBuilder out = new StringBuilder();
+        boolean hasTrust = false, hasAddr = false;
+        String[] lines = content.split("\\r?\\n");
+        for (String line : lines) {
+            String t = line.trim();
+            if (t.startsWith("TRUST_MATCH=")) {
+                out.append("TRUST_MATCH=%%bind(\"").append(ip).append("\")"); hasTrust = true;
+            }
+            else if (t.startsWith("ADDR=")) {
+                out.append("ADDR=%%bind(\"").append(ip).append("\")"); hasAddr = true;
+            }
+            else if (t.startsWith("TRUST=")) {
+                out.append("TRUST=255.255.255.255");
+            }
+            else out.append(line);
+            out.append('\n');
+        }
+        if (!hasTrust) out.append("TRUST_MATCH=%%bind(\"").append(ip).append("\")\n");
+        if (!hasAddr) out.append("ADDR=%%bind(\"").append(ip).append("\")\n");
+        if (!content.contains("LAN_THROTTLE=")) out.append("LAN_THROTTLE=1000\n");
+
+        try {
+            java.io.FileOutputStream fos = new java.io.FileOutputStream(cfg, false);
+            fos.write(out.toString().getBytes());
+            fos.close();
+            Toast.makeText(this, getString(R.string.nfs_lan_ip_set, ip), Toast.LENGTH_LONG).show();
+        }
+        catch (Exception e) {
+            Toast.makeText(this, R.string.nfs_lan_err_write, Toast.LENGTH_LONG).show();
+        }
+    }
+
     private void launch(int containerId, File exe) {
+        patchServerCfg(exe.getParentFile());
         Intent intent = new Intent(this, XServerDisplayActivity.class);
         intent.putExtra("container_id", containerId);
         intent.putExtra("exec_path", exe.getPath());
