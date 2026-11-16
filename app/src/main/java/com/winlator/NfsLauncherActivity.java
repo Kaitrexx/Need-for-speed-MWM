@@ -434,7 +434,7 @@ public class NfsLauncherActivity extends AppCompatActivity {
         String size = preferences.getString(NfsSettingsActivity.PREF_SCREEN_SIZE, NfsSettingsActivity.DEFAULT_SCREEN_SIZE);
         chipRes.setText(size.replace('x', '\u00d7'));
         String gpu = preferences.getString(NfsSettingsActivity.PREF_GPU_DRIVER, "auto");
-        chipGpu.setText(getString(R.string.nfs_chip_gpu, "Vortek"));
+        chipGpu.setText(getString(R.string.nfs_chip_gpu, gpu.equals("turnip") ? "Turnip" : gpu.equals("vortek") ? "Vortek" : getString(R.string.nfs_gpu_auto)));
         chipCpu.setText(getString(R.string.nfs_chip_cpu, formatCores(preferences.getString(NfsSettingsActivity.PREF_CPU_CORES, CPU_LIST))));
         int fps = preferences.getInt(NfsSettingsActivity.PREF_FPS_LIMIT, 0);
         chipFps.setText(getString(R.string.nfs_chip_fps, fps > 0 ? String.valueOf(fps) : getString(R.string.nfs_unlimited)));
@@ -564,8 +564,9 @@ public class NfsLauncherActivity extends AppCompatActivity {
         // NFS_GPU_V1: sürücü seçimi (avtomatik = Adreno-da Turnip, qalanında Vortek)
         String gpuPref = preferences.getString(NfsSettingsActivity.PREF_GPU_DRIVER, "auto");
         String wantedDriver;
-        // NFS_LITE: yalnız Vortek (Mali). Turnip/Zink/VirGL arxivləri paketdə yoxdur.
-        wantedDriver = GraphicsDrivers.VORTEK + "," + GraphicsDrivers.DEFAULT_OPENGL_DRIVER;
+        if (gpuPref.equals("turnip")) wantedDriver = GraphicsDrivers.TURNIP + "," + GraphicsDrivers.DEFAULT_OPENGL_DRIVER;
+        else if (gpuPref.equals("vortek")) wantedDriver = GraphicsDrivers.VORTEK + "," + GraphicsDrivers.DEFAULT_OPENGL_DRIVER;
+        else wantedDriver = GraphicsDrivers.getDefaultDriver(this);
         if (!GraphicsDrivers.parseIdentifiers(container.getGraphicsDriver())[0].equals(GraphicsDrivers.parseIdentifiers(wantedDriver)[0])) {
             container.setGraphicsDriver(wantedDriver);
             container.setGraphicsDriverConfig("");

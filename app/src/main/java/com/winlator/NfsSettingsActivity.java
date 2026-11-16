@@ -39,8 +39,7 @@ public class NfsSettingsActivity extends AppCompatActivity {
     public static final String PREF_FULLSCREEN = "nfs_fullscreen";
     public static final String DEFAULT_SCREEN_SIZE = "640x480";
     public static final String PREF_GPU_DRIVER = "nfs_gpu_driver"; // NFS_GPU_V1
-    // NFS_LITE: yalnız Vortek (Mali). Turnip arxivi çıxarıldı.
-    private static final String[] GPU_VALUES = {"auto", "vortek"};
+    private static final String[] GPU_VALUES = {"auto", "turnip", "vortek"};
     public static final String PREF_CPU_CORES = "nfs_cpu_cores"; // NFS_CPU_V1
     private static final String[] CPU_VALUES = {"6,7", "4,5,6,7", "0,1,2,3,4,5,6,7"};
 
@@ -54,8 +53,7 @@ public class NfsSettingsActivity extends AppCompatActivity {
     public static final String PREF_BOX64 = "nfs_box64_preset";
     private static final String[] BOX64_VALUES = {"PERFORMANCE", "INTERMEDIATE", "STABILITY"};
     public static final String PREF_DXVK = "nfs_dxvk_version";
-    // NFS_LITE: yalnız 1.10.3 paketdə var (D3D9 dəstəyi)
-    private static final String[] DXVK_VALUES = {"1.10.3"};
+    private static final String[] DXVK_VALUES = {"1.10.3", "2.4.1"};
 
     // NFS_SET_V1: tünd/sarı dizayn
     private static final int YELLOW = 0xFFFFC107;

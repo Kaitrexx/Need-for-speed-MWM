@@ -34,12 +34,11 @@ public abstract class GraphicsDrivers {
     }
 
     public static String[] getItems(String apiName) {
-        // NFS_LITE: paketdə yalnız Vortek və Gladio arxivləri var
         if (apiName.equalsIgnoreCase("VULKAN")) {
-            return new String[]{getName(VORTEK)};
+            return new String[]{getName(TURNIP), getName(VORTEK)};
         }
         else if (apiName.equalsIgnoreCase("OPENGL")) {
-            return new String[]{getName(GLADIO)};
+            return new String[]{getName(ZINK), getName(VIRGL), getName(GLADIO)};
         }
         else return new String[0];
     }
@@ -80,7 +79,6 @@ public abstract class GraphicsDrivers {
     }
 
     public static String getDefaultDriver(Context context) {
-        // NFS_LITE: Turnip arxivi çıxarıldı. Bu build yalnız Mali/Vortek üçündür.
-        return GraphicsDrivers.VORTEK+","+GraphicsDrivers.DEFAULT_OPENGL_DRIVER;
+        return GPUHelper.getAdrenoModelId(context) > 0 ? GraphicsDrivers.TURNIP+","+GraphicsDrivers.DEFAULT_OPENGL_DRIVER : GraphicsDrivers.VORTEK+","+GraphicsDrivers.DEFAULT_OPENGL_DRIVER;
     }
 }
