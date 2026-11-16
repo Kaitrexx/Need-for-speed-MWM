@@ -91,6 +91,36 @@ public class NetworkHelper {
         return null;
     }
 
+    // NFS_LAN: ZeroTier / overlay VPN interfeysinin IP-si (default route yoxdursa)
+    public String getOverlayIPv4Address() {
+        for (Network network : getOrderedNetworks()) {
+            LinkProperties lp = connectivityManager.getLinkProperties(network);
+            if (lp == null || !isVpn(network) || hasDefaultRoute(lp)) continue;
+            for (LinkAddress linkAddress : lp.getLinkAddresses()) {
+                InetAddress address = linkAddress.getAddress();
+                if (address instanceof Inet4Address && !address.isLoopbackAddress()) return address.getHostAddress();
+            }
+        }
+        return null;
+    }
+
+    // NFS_LAN:WiFi interfeysinin IP-si
+    public String getWifiIPv4Address() {
+        Network[] networks = connectivityManager.getAllNetworks();
+        if (networks == null) return null;
+        for (Network network : networks) {
+            NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+            if (capabilities == null || !capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) continue;
+            LinkProperties lp = connectivityManager.getLinkProperties(network);
+            if (lp == null) continue;
+            for (LinkAddress linkAddress : lp.getLinkAddresses()) {
+                InetAddress address = linkAddress.getAddress();
+                if (address instanceof Inet4Address && !address.isLoopbackAddress()) return address.getHostAddress();
+            }
+        }
+        return null;
+    }
+
     public List<IFAddress> getIFAddresses() {
         ArrayList<IFAddress> result = new ArrayList<>();
 
