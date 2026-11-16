@@ -128,7 +128,8 @@ public abstract class GeneralComponents {
                 items = new String[]{DefaultVersion.TURNIP};
                 break;
             case DXVK:
-                items = new String[]{DefaultVersion.MINOR_DXVK, DefaultVersion.MAJOR_DXVK};
+                // NFS_LITE: yalnız paketdə olan versiya
+                items = new String[]{DefaultVersion.MINOR_DXVK};
                 break;
             case VKD3D:
                 items = new String[]{DefaultVersion.VKD3D};
