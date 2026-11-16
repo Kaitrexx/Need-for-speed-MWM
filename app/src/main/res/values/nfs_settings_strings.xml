@@ -13,6 +13,7 @@
     <string name="nfs_set_perf">PERFORMANS</string>
     <string name="nfs_set_cpu">CPU nüvələri</string>
     <string name="nfs_set_fps">FPS limiti</string>
+    <string name="nfs_set_lan_mode">LAN rejimi</string>
     <string name="nfs_set_box64">Box64 rejimi</string>
     <string name="nfs_set_dxvk">DXVK versiyası</string>
     <string name="nfs_set_hud_title">GÖSTƏRİCİ</string>
@@ -47,6 +48,11 @@
         <item>30</item>
         <item>45 (90Hz üçün ideal)</item>
         <item>60</item>
+    </string-array>
+    <string-array name="nfs_lan_labels">
+        <item>Söndürülü (yalnız single-player)</item>
+        <item>WiFi LAN (yerli şəbəkə)</item>
+        <item>ZeroTier (uzaqdan LAN)</item>
     </string-array>
     <string-array name="nfs_hud_labels">
         <item>Söndürülü</item>

@@ -56,6 +56,9 @@ public class NfsSettingsActivity extends AppCompatActivity {
     public static final String PREF_DXVK = "nfs_dxvk_version";
     // NFS_UNIVERSAL: "auto" = Vulkan API versiyasına görə 1.10.3 / 2.4.1 seçir
     private static final String[] DXVK_VALUES = {"auto", "1.10.3", "2.4.1"};
+    // NFS_LAN: oyunun server.cfg faylına hansı IP-ni yazacağımızı seçir
+    public static final String PREF_LAN_MODE = "nfs_lan_mode";
+    private static final String[] LAN_MODE_VALUES = {"off", "wifi", "zerotier"};
 
     // NFS_SET_V1: tünd/sarı dizayn
     private static final int YELLOW = 0xFFFFC107;
@@ -201,6 +204,16 @@ public class NfsSettingsActivity extends AppCompatActivity {
         for (int i = 0; i < FPS_VALUES.length; i++) if (FPS_VALUES[i] == fps) fpsIndex = i;
         addSpinnerRow(perf, getString(R.string.nfs_set_fps), getResources().getStringArray(R.array.nfs_fps_labels), fpsIndex, (position) ->
             preferences.edit().putInt(PREF_FPS_LIMIT, FPS_VALUES[position]).apply());
+
+        // NFS_LAN: LAN / ZeroTier rejimi
+        String savedLan = preferences.getString(PREF_LAN_MODE, LAN_MODE_VALUES[0]);
+        int lanIndex = 0;
+        for (int i = 0; i < LAN_MODE_VALUES.length; i++) if (LAN_MODE_VALUES[i].equals(savedLan)) lanIndex = i;
+        addSpinnerRow(perf, getString(R.string.nfs_set_lan_mode), getResources().getStringArray(R.array.nfs_lan_labels), lanIndex, (position) -> {
+            preferences.edit().putString(PREF_LAN_MODE, LAN_MODE_VALUES[position]).apply();
+            if (!LAN_MODE_VALUES[position].equals("off"))
+                Toast.makeText(this, R.string.nfs_lan_hint, Toast.LENGTH_LONG).show();
+        });
 
         // GÖSTƏRİCİ
         LinearLayout hud = addCard(right, getString(R.string.nfs_set_hud_title));

@@ -18,4 +18,9 @@
     <string name="nfs_err_path">Qovluğun yolu müəyyən edilə bilmədi</string>
     <string name="nfs_err_exe">%s bu qovluqda tapılmadı</string>
     <string name="nfs_err_container">Container yaradıla bilmədi</string>
+    <string name="nfs_lan_ip_set">LAN IP təyin edildi: %1$s</string>
+    <string name="nfs_lan_err_zt">ZeroTier IP tapılmadı — ZeroTier tətbiqinin qoşulu olduğundan əmin olun</string>
+    <string name="nfs_lan_err_wifi">WiFi IP tapılmadı — WiFi-ə qoşulun</string>
+    <string name="nfs_lan_err_write">server.cfg yazıla bilmədi — oyun qovluğuna yazma icazəsi verin</string>
+    <string name="nfs_lan_hint">Hər iki cihaz eyni rejimi seçməli və eyni ZeroTier şəbəkəsində olmalıdır. Oyundan ƏVVƏL ZeroTier qoşulu olsun. Bir cihaz host açsın, digəri siyahıdan qoşulsun.</string>
 </resources>
