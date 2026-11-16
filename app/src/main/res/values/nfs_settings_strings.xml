@@ -23,9 +23,11 @@
     <string name="nfs_set_heavy"> (ağır)</string>
     <string-array name="nfs_gpu_labels">
         <item>Avtomatik</item>
-        <item>Vortek (Mali)</item>
+        <item>Turnip (yalnız Snapdragon/Adreno)</item>
+        <item>Vortek (Mali və digərləri)</item>
     </string-array>
     <string-array name="nfs_cpu_labels">
+        <item>Avtomatik (ən sürətli nüvələr)</item>
         <item>6,7 (hazırkı)</item>
         <item>4-7 (4 nüvə)</item>
         <item>0-7 (hamısı)</item>
@@ -36,7 +38,9 @@
         <item>Sabitlik (ən yavaş, ən təhlükəsiz)</item>
     </string-array>
     <string-array name="nfs_dxvk_labels">
-        <item>1.10.3 (D3D9 dəstəkli)</item>
+        <item>Avtomatik (tövsiyə olunur)</item>
+        <item>1.10.3 (Mali üçün uyğun)</item>
+        <item>2.4.1 (Vulkan 1.3 lazımdır)</item>
     </string-array>
     <string-array name="nfs_fps_labels">
         <item>Limitsiz</item>

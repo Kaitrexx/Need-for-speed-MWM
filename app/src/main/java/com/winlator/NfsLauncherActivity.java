@@ -65,7 +65,7 @@ public class NfsLauncherActivity extends AppCompatActivity {
     private static final String CONTAINER_NAME = "NFSMW";
     private static final String EXE_NAME = "speed.exe";
     private static final String SCREEN_SIZE = "640x480";
-    private static final String CPU_LIST = "6,7";
+    private static final String CPU_LIST = "auto";
     private static final String DXWRAPPER_CONFIG = "version="+DefaultVersion.MINOR_DXVK;
     private static final String WINCOMPONENTS = "direct3d=1,directsound=1,directmusic=0,directshow=0,directplay=0,xaudio=0,vcrun2005=0,vcrun2010=0,wmdecoder=1";
 
@@ -434,8 +434,10 @@ public class NfsLauncherActivity extends AppCompatActivity {
         String size = preferences.getString(NfsSettingsActivity.PREF_SCREEN_SIZE, NfsSettingsActivity.DEFAULT_SCREEN_SIZE);
         chipRes.setText(size.replace('x', '\u00d7'));
         String gpu = preferences.getString(NfsSettingsActivity.PREF_GPU_DRIVER, "auto");
-        chipGpu.setText(getString(R.string.nfs_chip_gpu, "Vortek"));
-        chipCpu.setText(getString(R.string.nfs_chip_cpu, formatCores(preferences.getString(NfsSettingsActivity.PREF_CPU_CORES, CPU_LIST))));
+        chipGpu.setText(getString(R.string.nfs_chip_gpu, gpu.equals("turnip") ? "Turnip" : gpu.equals("vortek") ? "Vortek" : getString(R.string.nfs_gpu_auto)));
+        String cpuPref = preferences.getString(NfsSettingsActivity.PREF_CPU_CORES, CPU_LIST);
+        String cpuShown = cpuPref.equals("auto") ? detectBigCores(Runtime.getRuntime().availableProcessors()) : cpuPref;
+        chipCpu.setText(getString(R.string.nfs_chip_cpu, formatCores(cpuShown)));
         int fps = preferences.getInt(NfsSettingsActivity.PREF_FPS_LIMIT, 0);
         chipFps.setText(getString(R.string.nfs_chip_fps, fps > 0 ? String.valueOf(fps) : getString(R.string.nfs_unlimited)));
     }
@@ -534,6 +536,34 @@ public class NfsLauncherActivity extends AppCompatActivity {
         }
     }
 
+    // NFS_UNIVERSAL: cihazın ən sürətli 2 nüvəsini sysfs-dən tapır.
+    // Snapdragon (prime core), Helio (A75), Dimensity, Exynos — hamısında işləyir.
+    private String detectBigCores(int cpuCount) {
+        try {
+            java.util.ArrayList<int[]> cores = new java.util.ArrayList<>();
+            for (int i = 0; i < cpuCount; i++) {
+                java.io.File f = new java.io.File("/sys/devices/system/cpu/cpu"+i+"/cpufreq/cpuinfo_max_freq");
+                if (!f.exists()) continue;
+                java.io.FileInputStream fis = new java.io.FileInputStream(f);
+                byte[] buf = new byte[32];
+                int len = fis.read(buf);
+                fis.close();
+                String s = new String(buf, 0, Math.max(0, len)).trim();
+                try { cores.add(new int[]{i, Integer.parseInt(s)}); } catch (NumberFormatException ignored) {}
+            }
+            if (cores.size() >= 2) {
+                cores.sort((a, b) -> Integer.compare(b[1], a[1]));
+                int[] top = new int[]{cores.get(0)[0], cores.get(1)[0]};
+                java.util.Arrays.sort(top);
+                return top[0]+","+top[1];
+            }
+        }
+        catch (Exception ignored) {}
+        // Fallback: big.LITTLE-də böyük nüvələr adətən sonda olur
+        int start = Math.max(0, cpuCount - 2);
+        return start+","+(cpuCount - 1);
+    }
+
     private void applySettings(Container container) {
         String size = preferences.getString(NfsSettingsActivity.PREF_SCREEN_SIZE, NfsSettingsActivity.DEFAULT_SCREEN_SIZE);
         int fps = preferences.getInt(NfsSettingsActivity.PREF_FPS_LIMIT, 0);
@@ -543,6 +573,8 @@ public class NfsLauncherActivity extends AppCompatActivity {
         // NFS_CPU_V1: CPU nüvə seçimi (mövcud olmayan nüvələr çıxarılır)
         String cpuPref = preferences.getString(NfsSettingsActivity.PREF_CPU_CORES, CPU_LIST);
         int cpuCount = Runtime.getRuntime().availableProcessors();
+        // NFS_UNIVERSAL: avtomatik rejimdə ən sürətli 2 nüvəni seç
+        if (cpuPref.equals("auto")) cpuPref = detectBigCores(cpuCount);
         StringBuilder cpuOut = new StringBuilder();
         for (String core : cpuPref.split(",")) {
             int index;
@@ -564,8 +596,9 @@ public class NfsLauncherActivity extends AppCompatActivity {
         // NFS_GPU_V1: sürücü seçimi (avtomatik = Adreno-da Turnip, qalanında Vortek)
         String gpuPref = preferences.getString(NfsSettingsActivity.PREF_GPU_DRIVER, "auto");
         String wantedDriver;
-        // NFS_LITE: yalnız Vortek (Mali). Turnip/Zink/VirGL arxivləri paketdə yoxdur.
-        wantedDriver = GraphicsDrivers.VORTEK + "," + GraphicsDrivers.DEFAULT_OPENGL_DRIVER;
+        if (gpuPref.equals("turnip")) wantedDriver = GraphicsDrivers.TURNIP + "," + GraphicsDrivers.DEFAULT_OPENGL_DRIVER;
+        else if (gpuPref.equals("vortek")) wantedDriver = GraphicsDrivers.VORTEK + "," + GraphicsDrivers.DEFAULT_OPENGL_DRIVER;
+        else wantedDriver = GraphicsDrivers.getDefaultDriver(this);
         if (!GraphicsDrivers.parseIdentifiers(container.getGraphicsDriver())[0].equals(GraphicsDrivers.parseIdentifiers(wantedDriver)[0])) {
             container.setGraphicsDriver(wantedDriver);
             container.setGraphicsDriverConfig("");
@@ -574,7 +607,9 @@ public class NfsLauncherActivity extends AppCompatActivity {
         String box64 = preferences.getString(NfsSettingsActivity.PREF_BOX64, "PERFORMANCE");
         container.setBox64Preset(box64);
 
-        String dxvk = preferences.getString(NfsSettingsActivity.PREF_DXVK, DefaultVersion.MINOR_DXVK);
+        String dxvk = preferences.getString(NfsSettingsActivity.PREF_DXVK, "auto");
+        // NFS_UNIVERSAL: Vulkan 1.3+ və ya Adreno/Turnip -> 2.4.1, əks halda 1.10.3
+        if (dxvk.equals("auto")) dxvk = DefaultVersion.DXVK(GraphicsDrivers.parseIdentifiers(wantedDriver)[0]);
         com.winlator.core.KeyValueSet dxConfig = new com.winlator.core.KeyValueSet(container.getDXWrapperConfig());
         dxConfig.put("version", dxvk);
         container.setDXWrapperConfig(dxConfig.toString());
