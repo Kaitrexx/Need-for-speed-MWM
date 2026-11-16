@@ -48,7 +48,8 @@ public class NfsSettingsActivity extends AppCompatActivity {
     private static final String[] ASPECT_VALUES = {"4:3", "5:4"};
     private static final String[] SIZES_43 = {"640x480", "800x600", "1024x768", "1280x960", "1600x1200"};
     private static final String[] SIZES_54 = {"1280x1024"};
-    private static final int[] FPS_VALUES = {0, 30, 60};
+    // NFS_OPT: 90Hz ekran üçün 45 əlavə edildi (90/2 = judder yox, az istilik)
+    private static final int[] FPS_VALUES = {0, 30, 45, 60};
     public static final String PREF_BOX64 = "nfs_box64_preset";
     private static final String[] BOX64_VALUES = {"PERFORMANCE", "INTERMEDIATE", "STABILITY"};
     public static final String PREF_DXVK = "nfs_dxvk_version";

@@ -43,6 +43,7 @@
     <string-array name="nfs_fps_labels">
         <item>Limitsiz</item>
         <item>30</item>
+        <item>45 (90Hz üçün ideal)</item>
         <item>60</item>
     </string-array>
     <string-array name="nfs_hud_labels">
