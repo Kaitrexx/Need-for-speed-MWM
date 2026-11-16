@@ -13,6 +13,8 @@
     <string name="nfs_set_perf">PERFORMANS</string>
     <string name="nfs_set_cpu">CPU nüvələri</string>
     <string name="nfs_set_fps">FPS limiti</string>
+    <string name="nfs_set_box64">Box64 rejimi</string>
+    <string name="nfs_set_dxvk">DXVK versiyası</string>
     <string name="nfs_set_hud_title">GÖSTƏRİCİ</string>
     <string name="nfs_set_hud">Oyun içi göstərici</string>
     <string name="nfs_set_note">Dəyişikliklər növbəti BAŞLAT-da tətbiq olunur. 1280x960 və yuxarısı RAM-ı çox işlədir.</string>
@@ -28,6 +30,15 @@
         <item>6,7 (hazırkı)</item>
         <item>4-7 (4 nüvə)</item>
         <item>0-7 (hamısı)</item>
+    </string-array>
+    <string-array name="nfs_box64_labels">
+        <item>Performans (ən sürətli)</item>
+        <item>Orta</item>
+        <item>Sabitlik (ən yavaş, ən təhlükəsiz)</item>
+    </string-array>
+    <string-array name="nfs_dxvk_labels">
+        <item>1.10.3 (Mali üçün uyğun)</item>
+        <item>2.4.1 (Vulkan 1.3 lazımdır)</item>
     </string-array>
     <string-array name="nfs_fps_labels">
         <item>Limitsiz</item>

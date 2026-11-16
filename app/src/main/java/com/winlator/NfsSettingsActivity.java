@@ -49,6 +49,10 @@ public class NfsSettingsActivity extends AppCompatActivity {
     private static final String[] SIZES_43 = {"640x480", "800x600", "1024x768", "1280x960", "1600x1200"};
     private static final String[] SIZES_54 = {"1280x1024"};
     private static final int[] FPS_VALUES = {0, 30, 60};
+    public static final String PREF_BOX64 = "nfs_box64_preset";
+    private static final String[] BOX64_VALUES = {"PERFORMANCE", "INTERMEDIATE", "STABILITY"};
+    public static final String PREF_DXVK = "nfs_dxvk_version";
+    private static final String[] DXVK_VALUES = {"1.10.3", "2.4.1"};
 
     // NFS_SET_V1: tünd/sarı dizayn
     private static final int YELLOW = 0xFFFFC107;
@@ -176,6 +180,18 @@ public class NfsSettingsActivity extends AppCompatActivity {
         for (int i = 0; i < CPU_VALUES.length; i++) if (CPU_VALUES[i].equals(savedCpu)) cpuIndex = i;
         addSpinnerRow(perf, getString(R.string.nfs_set_cpu), getResources().getStringArray(R.array.nfs_cpu_labels), cpuIndex, (position) ->
             preferences.edit().putString(PREF_CPU_CORES, CPU_VALUES[position]).apply());
+
+        String savedBox64 = preferences.getString(PREF_BOX64, BOX64_VALUES[0]);
+        int box64Index = 0;
+        for (int i = 0; i < BOX64_VALUES.length; i++) if (BOX64_VALUES[i].equals(savedBox64)) box64Index = i;
+        addSpinnerRow(perf, getString(R.string.nfs_set_box64), getResources().getStringArray(R.array.nfs_box64_labels), box64Index, (position) ->
+            preferences.edit().putString(PREF_BOX64, BOX64_VALUES[position]).apply());
+
+        String savedDxvk = preferences.getString(PREF_DXVK, DXVK_VALUES[0]);
+        int dxvkIndex = 0;
+        for (int i = 0; i < DXVK_VALUES.length; i++) if (DXVK_VALUES[i].equals(savedDxvk)) dxvkIndex = i;
+        addSpinnerRow(perf, getString(R.string.nfs_set_dxvk), getResources().getStringArray(R.array.nfs_dxvk_labels), dxvkIndex, (position) ->
+            preferences.edit().putString(PREF_DXVK, DXVK_VALUES[position]).apply());
 
         int fps = preferences.getInt(PREF_FPS_LIMIT, 0);
         int fpsIndex = 0;

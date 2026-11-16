@@ -572,6 +572,14 @@ public class NfsLauncherActivity extends AppCompatActivity {
             container.setGraphicsDriverConfig("");
         }
 
+        String box64 = preferences.getString(NfsSettingsActivity.PREF_BOX64, "PERFORMANCE");
+        container.setBox64Preset(box64);
+
+        String dxvk = preferences.getString(NfsSettingsActivity.PREF_DXVK, DefaultVersion.MINOR_DXVK);
+        com.winlator.core.KeyValueSet dxConfig = new com.winlator.core.KeyValueSet(container.getDXWrapperConfig());
+        dxConfig.put("version", dxvk);
+        container.setDXWrapperConfig(dxConfig.toString());
+
         StringBuilder env = new StringBuilder();
         for (String token : container.getEnvVars().split(" ")) {
             if (!token.isEmpty() && !token.startsWith("DXVK_FRAME_RATE=")) env.append(token).append(' ');
