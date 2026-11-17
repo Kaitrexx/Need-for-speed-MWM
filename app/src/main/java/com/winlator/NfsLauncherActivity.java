@@ -49,6 +49,7 @@ import com.winlator.container.DXWrappers;
 import com.winlator.container.GraphicsDrivers;
 import com.winlator.core.AppUtils;
 import com.winlator.core.DefaultVersion;
+import com.winlator.core.FileUtils;
 import com.winlator.core.LocaleHelper;
 import com.winlator.core.NetworkHelper;
 import com.winlator.xenvironment.RootFS;
@@ -65,6 +66,7 @@ public class NfsLauncherActivity extends AppCompatActivity {
     private static final String PREF_GAME_DIR = "nfs_game_dir";
     private static final String CONTAINER_NAME = "NFSMW";
     private static final String EXE_NAME = "speed.exe";
+    private static final String SAVE_FOLDER = "SAVE";
     private static final String SCREEN_SIZE = "640x480";
     private static final String CPU_LIST = "auto";
     private static final String DXWRAPPER_CONFIG = "version="+DefaultVersion.MINOR_DXVK;
@@ -86,6 +88,7 @@ public class NfsLauncherActivity extends AppCompatActivity {
     private boolean installStarted = false;
     private boolean busy = false;
     private boolean destroyed = false;
+    private boolean gameLaunched = false;
 
     private final Runnable poller = new Runnable() {
         @Override
@@ -134,6 +137,15 @@ public class NfsLauncherActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (gameLaunched) {
+            gameLaunched = false;
+            for (Container c : new ContainerManager(this).getContainers()) {
+                if (CONTAINER_NAME.equals(c.getName())) {
+                    syncSaves(false, c.id);
+                    break;
+                }
+            }
+        }
         if (preferences != null && statusView != null) updateUI();
     }
 
@@ -624,6 +636,50 @@ public class NfsLauncherActivity extends AppCompatActivity {
         container.saveData();
     }
 
+    // NFS_SAVE: save-lar proqramın daxili yaddaşında deyil, oyun qovluğundakı
+    // SAVE/ papkasında saxlanılır. Proqram silinib yenidən quraşdırılsa da bu
+    // papka qalır və oyun köhnə save ilə davam edir.
+    private File wineSaveDir(Container container) {
+        File user = container.getUserDir();
+        File modern = new File(user, "Documents/NFS Most Wanted");
+        if (modern.isDirectory()) return modern;
+        return new File(user, "My Documents/NFS Most Wanted");
+    }
+
+    private void copyTree(File src, File dst) {
+        if (src == null || !src.isDirectory()) return;
+        File[] children = src.listFiles();
+        if (children == null || children.length == 0) return;
+        dst.mkdirs();
+        for (File f : children) {
+            File target = new File(dst, f.getName());
+            if (f.isDirectory()) copyTree(f, target);
+            else FileUtils.copy(f, target);
+        }
+    }
+
+    private void syncSaves(boolean restore, int containerId) {
+        String dir = getGameDir();
+        if (dir == null) return;
+        File backup = new File(dir, SAVE_FOLDER);
+        if (!backup.isDirectory() && !backup.mkdirs()) return;
+        Container container = new ContainerManager(this).getContainerById(containerId);
+        if (container == null) return;
+        File wine = wineSaveDir(container);
+        if (restore) {
+            File[] files = backup.listFiles();
+            if (files == null || files.length == 0) return;
+            copyTree(backup, wine);
+            Toast.makeText(this, R.string.nfs_save_restored, Toast.LENGTH_SHORT).show();
+        }
+        else {
+            if (!wine.isDirectory()) return;
+            File[] files = wine.listFiles();
+            if (files == null || files.length == 0) return;
+            copyTree(wine, backup);
+        }
+    }
+
     // NFS_LAN: NFS MW server-i "ilk şəbəkə interfeysinə" bind olur və
     // TRUST_MATCH / ADDR server.cfg-dəki IP-yə qulaq asır. Default faylda EA-nın
     // 159.153.253.82 IP-si yazılıb — buna görə LAN/ZeroTier heç vaxt qoşulmur.
@@ -686,7 +742,9 @@ public class NfsLauncherActivity extends AppCompatActivity {
     }
 
     private void launch(int containerId, File exe) {
+        syncSaves(true, containerId);
         patchServerCfg(exe.getParentFile());
+        gameLaunched = true;
         Intent intent = new Intent(this, XServerDisplayActivity.class);
         intent.putExtra("container_id", containerId);
         intent.putExtra("exec_path", exe.getPath());
