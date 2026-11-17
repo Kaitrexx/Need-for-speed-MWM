@@ -26,7 +26,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
 import com.winlator.core.AppUtils;
+import com.winlator.core.KeyValueSet;
 import com.winlator.core.LocaleHelper;
+import com.winlator.winhandler.GamepadHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -235,6 +237,61 @@ public class NfsSettingsActivity extends AppCompatActivity {
         // Default SIMPLE (yalnız FPS) qoyulur.
         addSpinnerRow(hud, getString(R.string.nfs_set_hud), getResources().getStringArray(R.array.nfs_hud_labels), preferences.getInt(PREF_HUD_MODE, 1), (position) ->
             preferences.edit().putInt(PREF_HUD_MODE, position).apply());
+
+        // NFS_GAMEPAD: Bluetooth gamepad tanınması üçün model seçimi
+        LinearLayout gamepadCard = addCard(right, getString(R.string.nfs_set_gamepad_title));
+        ArrayList<GamepadHandler.GamepadModel> models = GamepadHandler.loadGamepadModels(this);
+        String[] modelNames = new String[models.size()];
+        String[] modelIds = new String[models.size()];
+        int modelIndex = 0;
+        String savedModel = preferences.getString("gamepad_model", "");
+        for (int i = 0; i < models.size(); i++) {
+            modelNames[i] = models.get(i).name;
+            modelIds[i] = models.get(i).identifier();
+            if (modelIds[i].equals(savedModel)) modelIndex = i;
+        }
+        addSpinnerRow(gamepadCard, getString(R.string.nfs_set_gamepad_model), modelNames, modelIndex, (position) -> {
+            if (position == 0) preferences.edit().remove("gamepad_model").apply();
+            else preferences.edit().putString("gamepad_model", modelIds[position]).apply();
+        });
+
+        // NFS MW 2005 DirectInput (STANDARD) gözləyir; bəzi pultlar XINPUT istəyir
+        String[] mapperLabels = {"STANDARD (NFS MW üçün)", "XINPUT"};
+        String[] mapperValues = {"0", "1"};
+        String savedMapper = preferences.getString("dinputMapperType", "0");
+        int mapperIndex = savedMapper.equals("1") ? 1 : 0;
+        addSpinnerRow(gamepadCard, getString(R.string.nfs_set_gamepad_mapper), mapperLabels, mapperIndex, (position) ->
+            preferences.edit().putString("dinputMapperType", mapperValues[position]).apply());
+
+        // Oyunçu slotları (hansı pultun hansı oyunçu olması). Auto qalırsa boş saxlanılır.
+        for (int i = 0; i < 4; i++) {
+            final byte slot = (byte)i;
+            TextView playerRow = new TextView(this);
+            String cfg = preferences.getString("gamepad_player"+i, "");
+            String label = cfg.isEmpty() ? "Auto" : new KeyValueSet(cfg).get("name", "Auto");
+            playerRow.setText("Oyunçu " + (i+1) + ": " + label);
+            playerRow.setTextSize(13);
+            playerRow.setTextColor(0xFFDDDDDD);
+            playerRow.setPadding(dp(10), dp(10), dp(10), dp(10));
+            GradientDrawable rowBg = new GradientDrawable();
+            rowBg.setColor(0xFF1E1E22);
+            rowBg.setCornerRadius(dp(8));
+            playerRow.setBackground(rowBg);
+            playerRow.setTag(cfg);
+            playerRow.setOnClickListener((v) -> {
+                com.winlator.contentdialog.GamepadPlayerConfigDialog dialog =
+                    new com.winlator.contentdialog.GamepadPlayerConfigDialog(v, slot);
+                dialog.setOnDismissListener(() -> {
+                    String tag = v.getTag().toString();
+                    if (tag.isEmpty()) preferences.edit().remove("gamepad_player"+slot).apply();
+                    else preferences.edit().putString("gamepad_player"+slot, tag).apply();
+                    playerRow.setText("Oyunçu " + (slot+1) + ": " +
+                        (tag.isEmpty() ? "Auto" : new KeyValueSet(tag).get("name", "Auto")));
+                });
+                dialog.show();
+            });
+            gamepadCard.addView(playerRow, new LinearLayout.LayoutParams(match, wrap));
+        }
 
         TextView note = new TextView(this);
         note.setText(R.string.nfs_set_note);

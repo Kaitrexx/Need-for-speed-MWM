@@ -19,6 +19,9 @@
     <string name="nfs_set_dxvk">DXVK versiyası</string>
     <string name="nfs_set_hud_title">GÖSTƏRİCİ</string>
     <string name="nfs_set_hud">Oyun içi göstərici</string>
+    <string name="nfs_set_gamepad_title">GAMEPAD</string>
+    <string name="nfs_set_gamepad_model">Pult modeli</string>
+    <string name="nfs_set_gamepad_mapper">Pult rejimi</string>
     <string name="nfs_set_note">Dəyişikliklər növbəti BAŞLAT-da tətbiq olunur. 1280x960 və yuxarısı RAM-ı çox işlədir.</string>
     <string name="nfs_set_save">YADDA SAXLA</string>
     <string name="nfs_set_saved">Yadda saxlanıldı</string>

@@ -241,6 +241,11 @@ public class XServerDisplayActivity extends AppCompatActivity implements Navigat
             else {
                 Intent intent = getIntent();
                 if (intent.hasExtra("exec_path")) win32AppWorkarounds.applyStartupWorkarounds(FileUtils.getName(intent.getStringExtra("exec_path")));
+
+                // NFS_GAMEPAD: NFS launcher shortcut istifadə etmir — pultun oyunda
+                // tanınması üçün DInput mapper-i ayardan/oyun üçün STANDARD qoyuruq.
+                String nfsMapper = preferences.getString("dinputMapperType", "0");
+                winHandler.gamepadHandler.setDInputMapperType(Byte.parseByte(nfsMapper));
             }
 
             this.graphicsDriver = GraphicsDrivers.parseIdentifiers(graphicsDriver);
