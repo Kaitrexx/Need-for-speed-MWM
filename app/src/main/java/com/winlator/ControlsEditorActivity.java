@@ -511,10 +511,9 @@ public class ControlsEditorActivity extends AppCompatActivity implements View.On
         // əlavə et (toolbar-dakı + düyməsi ilə eyni məntiq).
         element.setX(inputControlsView.getCursorX());
         element.setY(inputControlsView.getCursorY());
-        element.setScale(1.3f);
-        // NFS_FIX: ikon əvəzinə oxunula bilən qısa mətn (iconId = 0 → text çəkilir)
-        element.setIconId(0);
-        element.setText(scheme.label);
+        element.setScale(1.2f);
+        element.setIconId(scheme.iconId);
+        element.setText("");
         element.setBindingAt(0, Binding.fromString(scheme.binding));
         profile.addElement(element);
         profile.save();
