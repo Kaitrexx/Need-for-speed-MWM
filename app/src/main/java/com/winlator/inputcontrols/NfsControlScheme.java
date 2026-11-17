@@ -18,28 +18,28 @@ public class NfsControlScheme {
     // Manual gear: Shift Up = Shift, Shift Down = Ctrl, Speedbreaker = G, Nitro = X
     public static NfsControlScheme[] all() {
         return new NfsControlScheme[] {
-            // SÜRÜŞ — ox üçbucaqları (hamısı fərqli və anlaşılan)
-            new NfsControlScheme("Qaz (Accelerate)", 7, "KEY_UP"),          // ▲
-            new NfsControlScheme("Əyləc / Geri", 9, "KEY_DOWN"),            // ▼
-            new NfsControlScheme("Sola dön", 6, "KEY_LEFT"),                // ◀
-            new NfsControlScheme("Sağa dön", 8, "KEY_RIGHT"),               // ▶
-            new NfsControlScheme("Əl əyləci (Handbrake)", 5, "KEY_SPACE"),  // ●
-            new NfsControlScheme("Speedbreaker", 4, "KEY_G"),               // ↓
-            new NfsControlScheme("Nitro (N2O)", 3, "KEY_X"),                // ↑
-            new NfsControlScheme("Gear ↑ (Shift Up)", 1, "KEY_SHIFT_L"),    // ←
-            new NfsControlScheme("Gear ↓ (Shift Down)", 2, "KEY_CTRL_L"),   // ↔  (düzgün binding)
-            // KAMERA
-            new NfsControlScheme("Kameranı dəyiş", 20, "KEY_C"),            // ☰
-            new NfsControlScheme("Geri bax", 16, "KEY_L"),                  // ／
-            new NfsControlScheme("Kameranı geri çək", 17, "KEY_P"),         // ＼
-            // MENYU / DIGƏR
-            new NfsControlScheme("Maşını sıfırla", 14, "KEY_R"),            // ▣
-            new NfsControlScheme("Hadisəni başlat", 13, "KEY_ENTER"),       // ≡
-            new NfsControlScheme("Qara siyahı", 22, "KEY_B"),               // ▤
-            new NfsControlScheme("Dünya xəritəsi", 10, "KEY_M"),            // mouse
-            new NfsControlScheme("SMS mesajları", 11, "KEY_TAB"),           // mouse-click
-            new NfsControlScheme("Növbəti mahnı", 12, "KEY_T"),             // mouse
-            new NfsControlScheme("Pauza", 15, "KEY_ESC"),                   // ✕
+            // SÜRÜŞ — yeni, fərqli pictogram ikonlar (31..39)
+            new NfsControlScheme("Qaz (Accelerate)", 31, "KEY_UP"),          // pedal
+            new NfsControlScheme("Əyləc / Geri", 32, "KEY_DOWN"),            // stop
+            new NfsControlScheme("Sola dön", 33, "KEY_LEFT"),                // sükan ◀
+            new NfsControlScheme("Sağa dön", 34, "KEY_RIGHT"),               // sükan ▶
+            new NfsControlScheme("Əl əyləci (Handbrake)", 35, "KEY_SPACE"),  // əl əyləci
+            new NfsControlScheme("Speedbreaker", 36, "KEY_G"),               // zəncir/ildırım
+            new NfsControlScheme("Nitro (N2O)", 37, "KEY_X"),                // alov
+            new NfsControlScheme("Gear ↑ (Shift Up)", 38, "KEY_SHIFT_L"),    // dişli ↑
+            new NfsControlScheme("Gear ↓ (Shift Down)", 39, "KEY_CTRL_L"),   // dişli ↓
+            // KAMERA (40..42)
+            new NfsControlScheme("Kameranı dəyiş", 40, "KEY_C"),             // kamera
+            new NfsControlScheme("Geri bax", 41, "KEY_L"),                   // güzgü
+            new NfsControlScheme("Kameranı geri çək", 42, "KEY_P"),          // geri ox
+            // MENYU / DIGƏR (43..49)
+            new NfsControlScheme("Maşını sıfırla", 43, "KEY_R"),             // circular arrow
+            new NfsControlScheme("Hadisəni başlat", 44, "KEY_ENTER"),        // bayraq
+            new NfsControlScheme("Qara siyahı", 45, "KEY_B"),                // siyahı
+            new NfsControlScheme("Dünya xəritəsi", 46, "KEY_M"),             // qlobus
+            new NfsControlScheme("SMS mesajları", 47, "KEY_TAB"),            // SMS
+            new NfsControlScheme("Növbəti mahnı", 48, "KEY_T"),              // musiqi
+            new NfsControlScheme("Pauza", 49, "KEY_ESC"),                    // pauza
         };
     }
 }
