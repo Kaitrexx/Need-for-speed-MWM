@@ -683,7 +683,7 @@ public class XServerDisplayActivity extends AppCompatActivity implements Navigat
         hideButton.setPadding(hidePad, hidePad / 2, hidePad, hidePad / 2);
         FrameLayout.LayoutParams hideParams = new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        // NFS_FIX: SAVE düyməsinin altına, yuxarı-sağa qoy (qaz düyməsinin üstünə deyil)
+        // SAVE düyməsinin altına, yuxarı-sağa qoy (qaz düyməsinin üstünə deyil)
         hideParams.gravity = Gravity.TOP | Gravity.END;
         hideParams.topMargin = Math.round(108 * hideDensity);
         hideParams.rightMargin = Math.round(14 * hideDensity);

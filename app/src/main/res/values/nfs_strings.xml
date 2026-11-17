@@ -36,11 +36,4 @@
     <string name="nfs_save_button">SAVE</string>
     <string name="nfs_ctrl_hide">GİZLƏ</string>
     <string name="nfs_ctrl_show">GÖSTƏR</string>
-    <string name="nfs_scheme_add">Sxem əlavə et</string>
-    <string name="nfs_scheme_undo">Geri qaytar</string>
-    <string name="nfs_scheme_removed">Düymə silindi — Undo ilə qaytara bilərsiniz</string>
-    <string name="nfs_scheme_restored">Düymə geri qaytarıldı</string>
-    <string name="nfs_scheme_nothing_undo">Geri qaytarılacaq düymə yoxdur</string>
-    <string name="nfs_scheme_picker_title">Əlavə ediləcək funksiyanı seçin</string>
-    <string name="nfs_scheme_added">%1$s əlavə edildi</string>
 </resources>

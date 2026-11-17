@@ -281,7 +281,7 @@ public class NfsSettingsActivity extends AppCompatActivity {
             playerRow.setOnClickListener((v) -> {
                 com.winlator.contentdialog.GamepadPlayerConfigDialog dialog =
                     new com.winlator.contentdialog.GamepadPlayerConfigDialog(v, slot);
-                dialog.setOnDismissListener((dismissedDialog) -> {
+                dialog.setOnDismissListener(() -> {
                     String tag = v.getTag().toString();
                     if (tag.isEmpty()) preferences.edit().remove("gamepad_player"+slot).apply();
                     else preferences.edit().putString("gamepad_player"+slot, tag).apply();
