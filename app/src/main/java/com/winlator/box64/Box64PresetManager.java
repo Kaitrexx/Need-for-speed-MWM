@@ -62,7 +62,8 @@ public abstract class Box64PresetManager {
             envVars.put("BOX64_DYNAREC_FASTNAN", "1");
             envVars.put("BOX64_DYNAREC_FASTROUND", "1");
             envVars.put("BOX64_DYNAREC_X87DOUBLE", "0");
-            envVars.put("BOX64_DYNAREC_BIGBLOCK", "3");
+            // NFS_PERF: BIGBLOCK 3→2 — daha kiçik blok, daha az kompilyasiya spike
+            envVars.put("BOX64_DYNAREC_BIGBLOCK", "2");
             envVars.put("BOX64_DYNAREC_STRONGMEM", "0");
             envVars.put("BOX64_DYNAREC_FORWARD", "512");
             envVars.put("BOX64_DYNAREC_CALLRET", "1");
