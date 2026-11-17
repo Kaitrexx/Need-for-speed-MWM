@@ -60,5 +60,21 @@
             android:id="@+id/BTElementSettings"
             style="@style/ToolButton"
             android:src="@drawable/icon_settings"  />
+
+        <View style="@style/VerticalLine" />
+
+        <!-- NFS_SCHEME: silinən düyməni geri qaytar -->
+        <ImageButton
+            android:id="@+id/BTUndo"
+            style="@style/ToolButton"
+            android:src="@drawable/icon_reset"
+            android:contentDescription="@string/nfs_scheme_undo" />
+
+        <!-- NFS_SCHEME: funksiya siyahısından düymə əlavə et -->
+        <ImageButton
+            android:id="@+id/BTSchemes"
+            style="@style/ToolButton"
+            android:src="@drawable/icon_add"
+            android:contentDescription="@string/nfs_scheme_add" />
     </LinearLayout>
 </FrameLayout>
