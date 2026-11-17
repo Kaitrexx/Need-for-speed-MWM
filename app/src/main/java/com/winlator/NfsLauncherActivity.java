@@ -49,8 +49,8 @@ import com.winlator.container.DXWrappers;
 import com.winlator.container.GraphicsDrivers;
 import com.winlator.core.AppUtils;
 import com.winlator.core.DefaultVersion;
-import com.winlator.core.FileUtils;
 import com.winlator.core.LocaleHelper;
+import com.winlator.core.NfsSaveManager;
 import com.winlator.core.NetworkHelper;
 import com.winlator.xenvironment.RootFS;
 import com.winlator.xenvironment.RootFSInstaller;
@@ -636,48 +636,13 @@ public class NfsLauncherActivity extends AppCompatActivity {
         container.saveData();
     }
 
-    // NFS_SAVE: save-lar proqramın daxili yaddaşında deyil, oyun qovluğundakı
-    // SAVE/ papkasında saxlanılır. Proqram silinib yenidən quraşdırılsa da bu
-    // papka qalır və oyun köhnə save ilə davam edir.
-    private File wineSaveDir(Container container) {
-        File user = container.getUserDir();
-        File modern = new File(user, "Documents/NFS Most Wanted");
-        if (modern.isDirectory()) return modern;
-        return new File(user, "My Documents/NFS Most Wanted");
-    }
-
-    private void copyTree(File src, File dst) {
-        if (src == null || !src.isDirectory()) return;
-        File[] children = src.listFiles();
-        if (children == null || children.length == 0) return;
-        dst.mkdirs();
-        for (File f : children) {
-            File target = new File(dst, f.getName());
-            if (f.isDirectory()) copyTree(f, target);
-            else FileUtils.copy(f, target);
-        }
-    }
-
+    // NFS_SAVE: bütün məntiq NfsSaveManager-dadır (oyun içindəki düymə də istifadə edir)
     private void syncSaves(boolean restore, int containerId) {
-        String dir = getGameDir();
-        if (dir == null) return;
-        File backup = new File(dir, SAVE_FOLDER);
-        if (!backup.isDirectory() && !backup.mkdirs()) return;
-        Container container = new ContainerManager(this).getContainerById(containerId);
-        if (container == null) return;
-        File wine = wineSaveDir(container);
         if (restore) {
-            File[] files = backup.listFiles();
-            if (files == null || files.length == 0) return;
-            copyTree(backup, wine);
-            Toast.makeText(this, R.string.nfs_save_restored, Toast.LENGTH_SHORT).show();
+            if (NfsSaveManager.restore(this, containerId))
+                Toast.makeText(this, R.string.nfs_save_restored, Toast.LENGTH_SHORT).show();
         }
-        else {
-            if (!wine.isDirectory()) return;
-            File[] files = wine.listFiles();
-            if (files == null || files.length == 0) return;
-            copyTree(wine, backup);
-        }
+        else NfsSaveManager.backup(this, containerId);
     }
 
     // NFS_LAN: NFS MW server-i "ilk şəbəkə interfeysinə" bind olur və

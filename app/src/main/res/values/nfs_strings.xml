@@ -31,4 +31,7 @@
     <string name="nfs_controls_empty">Heç bir profil yoxdur — "Yeni profil" yaradın</string>
     <string name="nfs_controls_note">Dəyişikliklər avtomatik saxlanılır. Geri qayıtmaq üçün yuxarıdakı › işarəsinə toxunun.</string>
     <string name="nfs_save_restored">Save faylları SAVE qovluğundan yükləndi</string>
+    <string name="nfs_save_done">Save alındı ✓</string>
+    <string name="nfs_save_none">Save tapılmadı (oyunda hələ profil saxlanmayıb)</string>
+    <string name="nfs_save_button">SAVE</string>
 </resources>
