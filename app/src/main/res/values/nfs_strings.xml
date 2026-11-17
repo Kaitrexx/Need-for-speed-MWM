@@ -34,8 +34,8 @@
     <string name="nfs_save_done">Save alındı ✓</string>
     <string name="nfs_save_none">Save tapılmadı (oyunda hələ profil saxlanmayıb)</string>
     <string name="nfs_save_button">SAVE</string>
-    <string name="nfs_ctrl_hide">DÜYMƏLƏRİ GİZLƏ</string>
-    <string name="nfs_ctrl_show">DÜYMƏLƏRİ GÖSTƏR</string>
+    <string name="nfs_ctrl_hide">GİZLƏ</string>
+    <string name="nfs_ctrl_show">GÖSTƏR</string>
     <string name="nfs_scheme_add">Sxem əlavə et</string>
     <string name="nfs_scheme_undo">Geri qaytar</string>
     <string name="nfs_scheme_removed">Düymə silindi — Undo ilə qaytara bilərsiniz</string>

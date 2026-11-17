@@ -514,7 +514,8 @@ public class ControlsEditorActivity extends AppCompatActivity implements View.On
         element.setBindingAt(0, Binding.fromString(scheme.binding));
         profile.addElement(element);
         profile.save();
-        inputControlsView.invalidate();
+        // NFS_FIX: yeni düyməni seçili vəziyyətə gətir ki, haraya düşdüyü görünsün
+        inputControlsView.selectElement(element);
         AppUtils.showToast(this, getString(R.string.nfs_scheme_added, scheme.name));
     }
 }

@@ -188,7 +188,15 @@ public class NfsControlsActivity extends AppCompatActivity {
 
     private void renderProfiles() {
         profilesBox.removeAllViews();
-        ArrayList<ControlsProfile> profiles = manager.getProfiles(true);
+        ArrayList<ControlsProfile> all = manager.getProfiles(true);
+        // NFS_FIX: stock Winlator profillərini gizlət — yalnız NFS MW və istifadəçi
+        // yaratdıqları göstərilir (RTS / Virtual Gamepad / FPS artıq qarışdırmasın)
+        ArrayList<ControlsProfile> profiles = new ArrayList<>();
+        for (ControlsProfile p : all) {
+            String n = p.getName();
+            if (n.equals("NFS MW") || n.equals("NFS Profile") || n.contains("NFS")) profiles.add(p);
+        }
+        if (profiles.isEmpty() && !all.isEmpty()) profiles.add(all.get(0));
         if (selected != null) {
             for (ControlsProfile profile : profiles) {
                 if (profile.id == selected.id) {
