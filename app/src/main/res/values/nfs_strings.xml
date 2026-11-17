@@ -30,4 +30,5 @@
     <string name="nfs_controls_no_profile">Əvvəlcə bir profil seçin</string>
     <string name="nfs_controls_empty">Heç bir profil yoxdur — "Yeni profil" yaradın</string>
     <string name="nfs_controls_note">Dəyişikliklər avtomatik saxlanılır. Geri qayıtmaq üçün yuxarıdakı › işarəsinə toxunun.</string>
+    <string name="nfs_save_restored">Save faylları SAVE qovluğundan yükləndi</string>
 </resources>
