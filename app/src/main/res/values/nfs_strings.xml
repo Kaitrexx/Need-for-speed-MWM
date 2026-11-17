@@ -34,4 +34,6 @@
     <string name="nfs_save_done">Save alındı ✓</string>
     <string name="nfs_save_none">Save tapılmadı (oyunda hələ profil saxlanmayıb)</string>
     <string name="nfs_save_button">SAVE</string>
+    <string name="nfs_ctrl_hide">DÜYMƏLƏRİ GİZLƏ</string>
+    <string name="nfs_ctrl_show">DÜYMƏLƏRİ GÖSTƏR</string>
 </resources>
