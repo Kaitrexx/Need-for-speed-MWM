@@ -263,6 +263,16 @@ public class InputControlsView extends View {
         createMouseMoveTimer();
     }
 
+    // NFS_FIX: qırmızı xətlərin kəsişmə nöqtəsini (cursor) oxu — sxem düyməsi də
+    // məhz "+ ilə eyni yerə", yəni bu nöqtəyə əlavə olunmalıdır.
+    public int getCursorX() {
+        return cursor.x;
+    }
+
+    public int getCursorY() {
+        return cursor.y;
+    }
+
     public int getMaxWidth() {
         return (int)Mathf.roundTo(getWidth(), snappingSize);
     }
