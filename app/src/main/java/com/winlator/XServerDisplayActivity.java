@@ -74,7 +74,6 @@ import com.winlator.widget.InputControlsView;
 import com.winlator.widget.MagnifierView;
 import com.winlator.widget.TouchpadView;
 import com.winlator.widget.XServerView;
-import com.winlator.winhandler.TaskManagerDialog;
 import com.winlator.winhandler.WinHandler;
 import com.winlator.xconnector.UnixSocketConfig;
 import com.winlator.xenvironment.RootFS;
@@ -779,9 +778,8 @@ public class XServerDisplayActivity extends AppCompatActivity implements Navigat
 
         dialog.findViewById(R.id.BTSettings).setOnClickListener((v) -> {
             int position = sProfile.getSelectedItemPosition();
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("edit_input_controls", true);
-            intent.putExtra("selected_profile_id", position > 0 ? inputControlsManager.getProfiles().get(position - 1).id : 0);
+            // NFS_DESIGN_V3: stock Winlator ekranı əvəzinə NFS üslubunda idarəetmə ekranı
+            Intent intent = new Intent(this, NfsControlsActivity.class);
             editInputControlsCallback = () -> {
                 hideInputControls();
                 inputControlsManager.loadProfiles(true);

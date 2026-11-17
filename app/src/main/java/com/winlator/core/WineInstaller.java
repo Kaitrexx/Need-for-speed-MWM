@@ -74,7 +74,7 @@ public abstract class WineInstaller {
 
             preloaderDialog.closeOnUiThread();
             AppUtils.RestartApplicationOptions options = new AppUtils.RestartApplicationOptions();
-            options.selectedMenuItemId = R.id.menu_item_settings;
+            // NFS_LITE: stock menyular yoxdur — yenidən başlatma zamanı konkret menyu seçilmir
             AppUtils.restartApplication(activity, options);
         }));
     }
