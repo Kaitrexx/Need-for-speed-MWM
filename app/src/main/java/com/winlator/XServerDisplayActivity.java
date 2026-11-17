@@ -661,6 +661,40 @@ public class XServerDisplayActivity extends AppCompatActivity implements Navigat
         ControlsProfile nfsProfile = ensureNfsControlsProfile();
         if (nfsProfile != null) showInputControls(nfsProfile);
 
+        // NFS_HIDE_CTRL: ekran düymələrini gizlət/aç düyməsi (controller qoşanda istifadə olunur).
+        // showInputControls-dan SONRA qoyulur ki, visibility override olmasın.
+        final float hideDensity = getResources().getDisplayMetrics().density;
+        final int hidePad = Math.round(8 * hideDensity);
+        final TextView hideButton = new TextView(this);
+        final boolean[] controlsHidden = {preferences.getBoolean("nfs_controls_hidden", false)};
+        final Runnable updateHideButton = () -> {
+            hideButton.setText(controlsHidden[0] ? R.string.nfs_ctrl_show : R.string.nfs_ctrl_hide);
+            inputControlsView.setVisibility(controlsHidden[0] ? View.GONE : View.VISIBLE);
+        };
+        hideButton.setTextSize(12);
+        hideButton.setTypeface(Typeface.DEFAULT_BOLD);
+        hideButton.setGravity(Gravity.CENTER);
+        hideButton.setTextColor(0xFFFFC107);
+        GradientDrawable hideBg = new GradientDrawable();
+        hideBg.setColor(0xE6131315);
+        hideBg.setCornerRadius(10 * hideDensity);
+        hideBg.setStroke(1, 0xFFFFC107);
+        hideButton.setBackground(hideBg);
+        hideButton.setPadding(hidePad * 2, hidePad, hidePad * 2, hidePad);
+        FrameLayout.LayoutParams hideParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        hideParams.gravity = Gravity.BOTTOM | Gravity.END;
+        hideParams.bottomMargin = Math.round(64 * hideDensity);
+        hideParams.rightMargin = Math.round(14 * hideDensity);
+        hideButton.setLayoutParams(hideParams);
+        hideButton.setOnClickListener(v -> {
+            controlsHidden[0] = !controlsHidden[0];
+            preferences.edit().putBoolean("nfs_controls_hidden", controlsHidden[0]).apply();
+            updateHideButton.run();
+        });
+        updateHideButton.run();
+        rootView.addView(hideButton);
+
         android.widget.TextView btSettings = new android.widget.TextView(this);
         btSettings.setText("\u2699\uFE0E");
         btSettings.setTextColor(0xffffc107);
