@@ -62,7 +62,7 @@ public class NfsSettingsActivity extends AppCompatActivity {
     private static final String[] DXVK_VALUES = {"auto", "1.10.3", "2.4.1"};
     // NFS_LAN: oyunun server.cfg faylına hansı IP-ni yazacağımızı seçir
     public static final String PREF_LAN_MODE = "nfs_lan_mode";
-    private static final String[] LAN_MODE_VALUES = {"off", "wifi", "zerotier"};
+    private static final String[] LAN_MODE_VALUES = {"auto", "zerotier", "wifi", "off"};
 
     // NFS_SET_V1: tünd/sarı dizayn
     private static final int YELLOW = 0xFFFFC107;

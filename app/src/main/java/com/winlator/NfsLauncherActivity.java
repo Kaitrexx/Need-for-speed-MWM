@@ -49,6 +49,7 @@ import com.winlator.container.DXWrappers;
 import com.winlator.container.GraphicsDrivers;
 import com.winlator.core.AppUtils;
 import com.winlator.core.DefaultVersion;
+import com.winlator.core.FileUtils;
 import com.winlator.core.LocaleHelper;
 import com.winlator.core.NfsSaveManager;
 import com.winlator.core.NetworkHelper;
@@ -59,6 +60,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 public class NfsLauncherActivity extends AppCompatActivity {
     private static final int REQ_PERMISSIONS = 1;
@@ -649,63 +651,88 @@ public class NfsLauncherActivity extends AppCompatActivity {
         else NfsSaveManager.backup(this, containerId);
     }
 
+    private File findServerCfg(File gameDir) {
+        File[] files = gameDir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile() && file.getName().equalsIgnoreCase("server.cfg")) return file;
+            }
+        }
+        return new File(gameDir, "server.cfg");
+    }
+
     // NFS_LAN: NFS MW server-i "ilk şəbəkə interfeysinə" bind olur və
-    // TRUST_MATCH / ADDR server.cfg-dəki IP-yə qulaq asır. Default faylda EA-nın
-    // 159.153.253.82 IP-si yazılıb — buna görə LAN/ZeroTier heç vaxt qoşulmur.
-    // Oyun başlamadan seçilmiş rejimə görə öz IP-mizi yazırıq.
+    // TRUST / TRUST_MATCH / ADDR server.cfg-dəki IP-yə qulaq asır. Default faylda
+    // bu sətirlər '#' ilə şərhə alınıb və ya EA-nın 159.153.253.82 IP-si yazılıb.
+    // Oyun başlamadan seçilmiş rejimə görə öz IP-mizi və TRUST=255.255.255.255 yazırıq.
     private void patchServerCfg(File gameDir) {
-        String mode = preferences.getString(NfsSettingsActivity.PREF_LAN_MODE, "off");
+        String mode = preferences.getString(NfsSettingsActivity.PREF_LAN_MODE, "auto");
         if (mode.equals("off") || gameDir == null || !gameDir.isDirectory()) return;
 
         NetworkHelper helper = new NetworkHelper(this);
-        String ip = mode.equals("zerotier") ? helper.getOverlayIPv4Address() : helper.getWifiIPv4Address();
+        String ip;
+        if (mode.equals("zerotier")) ip = helper.getOverlayIPv4Address();
+        else if (mode.equals("wifi")) ip = helper.getWifiIPv4Address();
+        else {
+            ip = helper.getOverlayIPv4Address();
+            if (ip == null) ip = helper.getWifiIPv4Address();
+            if (ip == null) ip = helper.getIPv4Address();
+        }
         if (ip == null) {
-            Toast.makeText(this, mode.equals("zerotier")
-                    ? R.string.nfs_lan_err_zt : R.string.nfs_lan_err_wifi, Toast.LENGTH_LONG).show();
+            if (!mode.equals("auto")) {
+                Toast.makeText(this, mode.equals("zerotier")
+                        ? R.string.nfs_lan_err_zt : R.string.nfs_lan_err_wifi, Toast.LENGTH_LONG).show();
+            }
             return;
         }
 
-        File cfg = new File(gameDir, "server.cfg");
+        File cfg = findServerCfg(gameDir);
         String content = "";
-        try {
-            if (cfg.exists()) {
-                java.io.FileInputStream fis = new java.io.FileInputStream(cfg);
-                byte[] buf = new byte[fis.available()];
-                int n = fis.read(buf);
-                fis.close();
-                content = new String(buf, 0, Math.max(0, n));
-            }
+        if (cfg.isFile()) {
+            byte[] raw = FileUtils.read(cfg);
+            if (raw != null) content = new String(raw, StandardCharsets.UTF_8);
         }
-        catch (Exception ignored) {}
 
         StringBuilder out = new StringBuilder();
-        boolean hasTrust = false, hasAddr = false;
-        String[] lines = content.split("\\r?\\n");
-        for (String line : lines) {
-            String t = line.trim();
-            if (t.startsWith("TRUST_MATCH=")) {
-                out.append("TRUST_MATCH=%%bind(\"").append(ip).append("\")"); hasTrust = true;
+        boolean hasTrustMask = false, hasTrustMatch = false, hasAddr = false, hasThrottle = false;
+        if (!content.isEmpty()) {
+            String[] lines = content.split("\\r?\\n");
+            for (String line : lines) {
+                String t = line.trim();
+                String clean = t.replaceFirst("^#+\\s*", "");
+                if (clean.startsWith("TRUST_MATCH=")) {
+                    if (hasTrustMatch) continue;
+                    out.append("TRUST_MATCH=%%bind(\"").append(ip).append("\")");
+                    hasTrustMatch = true;
+                }
+                else if (clean.startsWith("ADDR=")) {
+                    if (hasAddr) continue;
+                    out.append("ADDR=%%bind(\"").append(ip).append("\")");
+                    hasAddr = true;
+                }
+                else if (clean.startsWith("TRUST=")) {
+                    if (hasTrustMask) continue;
+                    out.append("TRUST=255.255.255.255");
+                    hasTrustMask = true;
+                }
+                else if (clean.startsWith("LAN_THROTTLE=")) {
+                    if (hasThrottle) continue;
+                    out.append(clean);
+                    hasThrottle = true;
+                }
+                else out.append(line);
+                out.append('\n');
             }
-            else if (t.startsWith("ADDR=")) {
-                out.append("ADDR=%%bind(\"").append(ip).append("\")"); hasAddr = true;
-            }
-            else if (t.startsWith("TRUST=")) {
-                out.append("TRUST=255.255.255.255");
-            }
-            else out.append(line);
-            out.append('\n');
         }
-        if (!hasTrust) out.append("TRUST_MATCH=%%bind(\"").append(ip).append("\")\n");
+        if (!hasTrustMask) out.append("TRUST=255.255.255.255\n");
+        if (!hasTrustMatch) out.append("TRUST_MATCH=%%bind(\"").append(ip).append("\")\n");
         if (!hasAddr) out.append("ADDR=%%bind(\"").append(ip).append("\")\n");
-        if (!content.contains("LAN_THROTTLE=")) out.append("LAN_THROTTLE=1000\n");
+        if (!hasThrottle) out.append("LAN_THROTTLE=30\n");
 
-        try {
-            java.io.FileOutputStream fos = new java.io.FileOutputStream(cfg, false);
-            fos.write(out.toString().getBytes());
-            fos.close();
+        if (FileUtils.writeString(cfg, out.toString())) {
             Toast.makeText(this, getString(R.string.nfs_lan_ip_set, ip), Toast.LENGTH_LONG).show();
         }
-        catch (Exception e) {
+        else {
             Toast.makeText(this, R.string.nfs_lan_err_write, Toast.LENGTH_LONG).show();
         }
     }

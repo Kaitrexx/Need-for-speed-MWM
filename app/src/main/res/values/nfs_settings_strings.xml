@@ -54,9 +54,10 @@
         <item>60</item>
     </string-array>
     <string-array name="nfs_lan_labels">
-        <item>Söndürülü (yalnız single-player)</item>
-        <item>WiFi LAN (yerli şəbəkə)</item>
+        <item>Avtomatik (ZeroTier / WiFi)</item>
         <item>ZeroTier (uzaqdan LAN)</item>
+        <item>WiFi LAN (yerli şəbəkə)</item>
+        <item>Söndürülü (yalnız single-player)</item>
     </string-array>
     <string-array name="nfs_hud_labels">
         <item>Söndürülü</item>
