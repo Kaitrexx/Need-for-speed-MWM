@@ -28,7 +28,6 @@ import com.winlator.inputcontrols.Binding;
 import com.winlator.inputcontrols.ControlElement;
 import com.winlator.inputcontrols.ControlsProfile;
 import com.winlator.inputcontrols.InputControlsManager;
-import com.winlator.inputcontrols.NfsControlScheme;
 import com.winlator.math.Mathf;
 import com.winlator.core.AppUtils;
 import com.winlator.core.FileUtils;
@@ -45,8 +44,6 @@ public class ControlsEditorActivity extends AppCompatActivity implements View.On
     private InputControlsView inputControlsView;
     private ControlsProfile profile;
     private View toolbox;
-    // NFS_SCHEME: son silinən düymə — Undo üçün saxlanılır
-    private ControlElement lastRemovedElement;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -69,8 +66,6 @@ public class ControlsEditorActivity extends AppCompatActivity implements View.On
         container.findViewById(R.id.BTAddElement).setOnClickListener(this);
         container.findViewById(R.id.BTRemoveElement).setOnClickListener(this);
         container.findViewById(R.id.BTElementSettings).setOnClickListener(this);
-        container.findViewById(R.id.BTUndo).setOnClickListener(this);
-        container.findViewById(R.id.BTSchemes).setOnClickListener(this);
 
         toolbox = container.findViewById(R.id.Toolbox);
 
@@ -125,27 +120,9 @@ public class ControlsEditorActivity extends AppCompatActivity implements View.On
                 }
                 break;
             case R.id.BTRemoveElement:
-                // NFS_SCHEME: silinən düyməni Undo üçün yadda saxla
-                lastRemovedElement = inputControlsView.getSelectedElement();
                 if (!inputControlsView.removeElement()) {
                     AppUtils.showToast(this, R.string.no_control_element_selected);
-                    lastRemovedElement = null;
                 }
-                else AppUtils.showToast(this, R.string.nfs_scheme_removed);
-                break;
-            case R.id.BTUndo:
-                // NFS_SCHEME: son silinən düyməni geri qaytar
-                if (lastRemovedElement != null) {
-                    profile.addElement(lastRemovedElement);
-                    profile.save();
-                    inputControlsView.invalidate();
-                    lastRemovedElement = null;
-                    AppUtils.showToast(this, R.string.nfs_scheme_restored);
-                }
-                else AppUtils.showToast(this, R.string.nfs_scheme_nothing_undo);
-                break;
-            case R.id.BTSchemes:
-                showSchemePicker();
                 break;
             case R.id.BTElementSettings:
                 ControlElement selectedElement = inputControlsView.getSelectedElement();
@@ -487,38 +464,5 @@ public class ControlsEditorActivity extends AppCompatActivity implements View.On
 
             parent.addView(imageView);
         }
-    }
-
-    // NFS_SCHEME: oyunun bütün funksiyalarından birini seçib ekran düyməsi əlavə et
-    private void showSchemePicker() {
-        final NfsControlScheme[] schemes = NfsControlScheme.all();
-        String[] items = new String[schemes.length];
-        for (int i = 0; i < schemes.length; i++) {
-            items[i] = "[" + schemes[i].group + "] " + schemes[i].name;
-        }
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle(R.string.nfs_scheme_picker_title)
-            .setItems(items, (dialog, which) -> addSchemeButton(schemes[which]))
-            .setNegativeButton(android.R.string.cancel, null)
-            .show();
-    }
-
-    private void addSchemeButton(NfsControlScheme scheme) {
-        ControlElement element = new ControlElement(inputControlsView);
-        element.setType(ControlElement.Type.BUTTON);
-        element.setShape(ControlElement.Shape.CIRCLE);
-        // NFS_FIX: sabit koordinat DEYİL — qırmızı xətlərin kəsişdiyi cursor yerinə
-        // əlavə et (toolbar-dakı + düyməsi ilə eyni məntiq).
-        element.setX(inputControlsView.getCursorX());
-        element.setY(inputControlsView.getCursorY());
-        element.setScale(1.2f);
-        element.setIconId(scheme.iconId);
-        element.setText("");
-        element.setBindingAt(0, Binding.fromString(scheme.binding));
-        profile.addElement(element);
-        profile.save();
-        // NFS_FIX: yeni düyməni seçili vəziyyətə gətir ki, haraya düşdüyü görünsün
-        inputControlsView.selectElement(element);
-        AppUtils.showToast(this, getString(R.string.nfs_scheme_added, scheme.name));
     }
 }
