@@ -10,6 +10,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,6 +56,7 @@ import com.winlator.core.FileUtils;
 import com.winlator.core.GeneralComponents;
 import com.winlator.core.KeyValueSet;
 import com.winlator.core.LocaleHelper;
+import com.winlator.core.NfsSaveManager;
 import com.winlator.core.PreloaderDialog;
 import com.winlator.core.ProcessHelper;
 import com.winlator.core.StringUtils;
@@ -613,6 +618,30 @@ public class XServerDisplayActivity extends AppCompatActivity implements Navigat
             frameRating.setVisibility(View.GONE);
             rootView.addView(frameRating);
             updateFpsBadge();
+
+            // NFS_SAVE: oyun içində SAVE düyməsi — basılan anda save alır
+            float density = getResources().getDisplayMetrics().density;
+            TextView saveButton = new TextView(this);
+            saveButton.setText(R.string.nfs_save_button);
+            saveButton.setTextSize(12);
+            saveButton.setTypeface(Typeface.DEFAULT_BOLD);
+            saveButton.setGravity(Gravity.CENTER);
+            saveButton.setTextColor(0xFFFFC107);
+            GradientDrawable saveBg = new GradientDrawable();
+            saveBg.setColor(0xE6131315);
+            saveBg.setCornerRadius(10 * density);
+            saveBg.setStroke(1, 0xFFFFC107);
+            saveButton.setBackground(saveBg);
+            int pad = Math.round(8 * density);
+            saveButton.setPadding(pad * 2, pad, pad * 2, pad);
+            FrameLayout.LayoutParams saveParams = new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+            saveParams.gravity = Gravity.TOP | Gravity.END;
+            saveParams.topMargin = Math.round(64 * density);
+            saveParams.rightMargin = Math.round(14 * density);
+            saveButton.setLayoutParams(saveParams);
+            saveButton.setOnClickListener(v -> NfsSaveManager.backupWithToast(this, container.id));
+            rootView.addView(saveButton);
         }
 
         if (shortcut != null) {
