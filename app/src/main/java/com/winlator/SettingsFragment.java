@@ -91,7 +91,7 @@ public class SettingsFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == MainActivity.OPEN_FILE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == AppConstants.OPEN_FILE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             try {
                 if (selectWineFileCallback != null && data != null) selectWineFileCallback.call(data.getData());
             }
@@ -202,12 +202,12 @@ public class SettingsFragment extends Fragment {
         final int oldLCIndex = sLanguage.getSelectedItemPosition();
 
         view.findViewById(R.id.BTReinstallSystemFiles).setOnClickListener((v) -> {
-            ContentDialog.confirm(context, R.string.do_you_want_to_reinstall_system_files, () -> RootFSInstaller.install((MainActivity)getActivity()));
+            ContentDialog.confirm(context, R.string.do_you_want_to_reinstall_system_files, () -> RootFSInstaller.install((androidx.appcompat.app.AppCompatActivity)getActivity()));
         });
 
         loadGamepadPlayerConfigs(view);
 
-        if (MainActivity.DEBUG_MODE) {
+        if (AppConstants.DEBUG_MODE) {
             view.findViewById(R.id.LLWineInstallation).setVisibility(View.VISIBLE);
         }
 
@@ -256,15 +256,8 @@ public class SettingsFragment extends Fragment {
             else if (preferences.contains("wine_debug_channels")) editor.remove("wine_debug_channels");
 
             if (editor.commit()) {
-                if (!restartApp) {
-                    NavigationView navigationView = getActivity().findViewById(R.id.NavigationView);
-                    navigationView.setCheckedItem(R.id.menu_item_containers);
-                    FragmentManager fragmentManager = getParentFragmentManager();
-                    fragmentManager.beginTransaction()
-                        .replace(R.id.FLFragmentContainer, new ContainersFragment())
-                        .commit();
-                }
-                else AppUtils.restartActivity(getActivity());
+                // NFS_LITE: stock konteyner ekranı yoxdur — hər halda tətbiqi yenidən başlat
+                AppUtils.restartActivity(getActivity());
             }
         });
 
@@ -397,7 +390,7 @@ public class SettingsFragment extends Fragment {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("*/*");
-        getActivity().startActivityFromFragment(this, intent, MainActivity.OPEN_FILE_REQUEST_CODE);
+        getActivity().startActivityFromFragment(this, intent, AppConstants.OPEN_FILE_REQUEST_CODE);
     }
 
     private void installWine(final WineInfo wineInfo) {

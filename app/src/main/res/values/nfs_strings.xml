@@ -23,4 +23,12 @@
     <string name="nfs_lan_err_wifi">WiFi IP tapılmadı — WiFi-ə qoşulun</string>
     <string name="nfs_lan_err_write">server.cfg yazıla bilmədi — oyun qovluğuna yazma icazəsi verin</string>
     <string name="nfs_lan_hint">Hər iki cihaz eyni rejimi seçməli və eyni ZeroTier şəbəkəsində olmalıdır. Oyundan ƏVVƏL ZeroTier qoşulu olsun. Bir cihaz host açsın, digəri siyahıdan qoşulsun.</string>
+    <string name="nfs_controls_title">İDARƏETMƏ</string>
+    <string name="nfs_controls_profiles">PROFİLLƏR</string>
+    <string name="nfs_controls_actions">ƏMƏLİYYATLAR</string>
+    <string name="nfs_controls_edit">REDAKTƏ ET</string>
+    <string name="nfs_controls_new">YENİ PROFİL</string>
+    <string name="nfs_controls_no_profile">Əvvəlcə bir profil seçin</string>
+    <string name="nfs_controls_empty">Heç bir profil yoxdur — "Yeni profil" yaradın</string>
+    <string name="nfs_controls_note">Dəyişikliklər avtomatik saxlanılır. Geri qayıtmaq üçün yuxarıdakı › işarəsinə toxunun.</string>
 </resources>
