@@ -53,6 +53,8 @@ public class NfsSettingsActivity extends AppCompatActivity {
     private static final int[] FPS_VALUES = {0, 30, 45, 60};
     public static final String PREF_BOX64 = "nfs_box64_preset";
     private static final String[] BOX64_VALUES = {"PERFORMANCE", "INTERMEDIATE", "STABILITY"};
+    // NFS_PERF: dynarec bloklarını diska yaz (təkrar açılışda kompilyasiya spike azalır)
+    public static final String PREF_DYNACACHE = "nfs_dynacache";
     public static final String PREF_DXVK = "nfs_dxvk_version";
     // NFS_UNIVERSAL: "auto" = Vulkan API versiyasına görə 1.10.3 / 2.4.1 seçir
     private static final String[] DXVK_VALUES = {"auto", "1.10.3", "2.4.1"};
@@ -199,7 +201,19 @@ public class NfsSettingsActivity extends AppCompatActivity {
         addSpinnerRow(perf, getString(R.string.nfs_set_dxvk), getResources().getStringArray(R.array.nfs_dxvk_labels), dxvkIndex, (position) ->
             preferences.edit().putString(PREF_DXVK, DXVK_VALUES[position]).apply());
 
-        int fps = preferences.getInt(PREF_FPS_LIMIT, 0);
+        // NFS_PERF: Box64 dynacache aç/bağla (default açıq)
+        Switch swDynacache = new Switch(this);
+        swDynacache.setChecked(preferences.getBoolean(PREF_DYNACACHE, true));
+        swDynacache.setThumbTintList(new ColorStateList(
+            new int[][]{{android.R.attr.state_checked}, {}}, new int[]{YELLOW, 0xFF8A8A8E}));
+        swDynacache.setTrackTintList(new ColorStateList(
+            new int[][]{{android.R.attr.state_checked}, {}}, new int[]{0x99FFC107, 0xFF3A3A3E}));
+        swDynacache.setOnCheckedChangeListener((button, checked) ->
+            preferences.edit().putBoolean(PREF_DYNACACHE, checked).apply());
+        addRow(perf, getString(R.string.nfs_set_dynacache), swDynacache);
+
+        // NFS_PERF: A06 60Hz ekran üçün stabil 60 default (limitsiz/limitsiz judder verir)
+        int fps = preferences.getInt(PREF_FPS_LIMIT, 60);
         int fpsIndex = 0;
         for (int i = 0; i < FPS_VALUES.length; i++) if (FPS_VALUES[i] == fps) fpsIndex = i;
         addSpinnerRow(perf, getString(R.string.nfs_set_fps), getResources().getStringArray(R.array.nfs_fps_labels), fpsIndex, (position) ->
@@ -217,7 +231,9 @@ public class NfsSettingsActivity extends AppCompatActivity {
 
         // GÖSTƏRİCİ
         LinearLayout hud = addCard(right, getString(R.string.nfs_set_hud_title));
-        addSpinnerRow(hud, getString(R.string.nfs_set_hud), getResources().getStringArray(R.array.nfs_hud_labels), preferences.getInt(PREF_HUD_MODE, 0), (position) ->
+        // NFS_PERF: FULL rejimi hər saniyə RAM/CPU/battery sorğusu edir → mikro-spike.
+        // Default SIMPLE (yalnız FPS) qoyulur.
+        addSpinnerRow(hud, getString(R.string.nfs_set_hud), getResources().getStringArray(R.array.nfs_hud_labels), preferences.getInt(PREF_HUD_MODE, 1), (position) ->
             preferences.edit().putInt(PREF_HUD_MODE, position).apply());
 
         TextView note = new TextView(this);

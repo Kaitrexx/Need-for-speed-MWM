@@ -451,7 +451,7 @@ public class NfsLauncherActivity extends AppCompatActivity {
         String cpuPref = preferences.getString(NfsSettingsActivity.PREF_CPU_CORES, CPU_LIST);
         String cpuShown = cpuPref.equals("auto") ? detectBigCores(Runtime.getRuntime().availableProcessors()) : cpuPref;
         chipCpu.setText(getString(R.string.nfs_chip_cpu, formatCores(cpuShown)));
-        int fps = preferences.getInt(NfsSettingsActivity.PREF_FPS_LIMIT, 0);
+        int fps = preferences.getInt(NfsSettingsActivity.PREF_FPS_LIMIT, 60);
         chipFps.setText(getString(R.string.nfs_chip_fps, fps > 0 ? String.valueOf(fps) : getString(R.string.nfs_unlimited)));
     }
 
@@ -579,9 +579,9 @@ public class NfsLauncherActivity extends AppCompatActivity {
 
     private void applySettings(Container container) {
         String size = preferences.getString(NfsSettingsActivity.PREF_SCREEN_SIZE, NfsSettingsActivity.DEFAULT_SCREEN_SIZE);
-        int fps = preferences.getInt(NfsSettingsActivity.PREF_FPS_LIMIT, 0);
+        int fps = preferences.getInt(NfsSettingsActivity.PREF_FPS_LIMIT, 60);
         container.setScreenSize(size);
-        container.setHUDMode((byte)preferences.getInt(NfsSettingsActivity.PREF_HUD_MODE, 0));
+        container.setHUDMode((byte)preferences.getInt(NfsSettingsActivity.PREF_HUD_MODE, 1));
 
         // NFS_CPU_V1: CPU nüvə seçimi (mövcud olmayan nüvələr çıxarılır)
         String cpuPref = preferences.getString(NfsSettingsActivity.PREF_CPU_CORES, CPU_LIST);
@@ -629,9 +629,13 @@ public class NfsLauncherActivity extends AppCompatActivity {
 
         StringBuilder env = new StringBuilder();
         for (String token : container.getEnvVars().split(" ")) {
-            if (!token.isEmpty() && !token.startsWith("DXVK_FRAME_RATE=")) env.append(token).append(' ');
+            if (!token.isEmpty() && !token.startsWith("DXVK_FRAME_RATE=")
+                    && !token.startsWith("BOX64_DYNACACHE=")) env.append(token).append(' ');
         }
         if (fps > 0) env.append("DXVK_FRAME_RATE=").append(fps);
+        // NFS_PERF: dynacache açıqdırsa dynarec blokları diska yazılır (spike azalır)
+        env.append(" BOX64_DYNACACHE=").append(
+            preferences.getBoolean(NfsSettingsActivity.PREF_DYNACACHE, true) ? "1" : "0");
         container.setEnvVars(env.toString().trim());
         container.saveData();
     }

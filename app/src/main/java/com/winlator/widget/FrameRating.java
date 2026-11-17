@@ -243,7 +243,8 @@ public class FrameRating extends FrameLayout implements Runnable {
         if (getVisibility() == GONE) setVisibility(View.VISIBLE);
         ((TextView)fpsPanel.getChildAt(1)).setText(String.format(Locale.ENGLISH, "%.1f", lastFPS));
 
-        if (mode == Mode.FULL && ++tick >= 2) {
+        // NFS_PERF: FULL rejimdə RAM/CPU/battery sorğularını 1s-dən 2s-ə seyrəlt
+        if (mode == Mode.FULL && ++tick >= 4) {
             tick = 0;
             activityManager.getMemoryInfo(memoryInfo);
             long usedMem = memoryInfo.totalMem - memoryInfo.availMem;
